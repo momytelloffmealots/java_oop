@@ -20,11 +20,16 @@ public class MainApp implements NavListener {
     private CardLayout cardLayout;
     private TopRankingPanel rightPanel;
     private List<models.Manga> followedMangas = new ArrayList<>(); // Kho lưu trữ truyện theo dõi
+    private List<models.Manga> historyMangas = new ArrayList<>(); // Kho lưu trữ lịch sử
+    private List<models.Manga> masterMangaList; // Danh sách tổng hợp để xếp hạng
     private JPanel mainContentPanel;
 
     public MainApp() {
+        masterMangaList = generateMasterList();
         initialize();
     }
+
+    // Removed duplicate empty generateMasterList method.
 
     private void initialize() {
         frame = new JFrame();
@@ -61,7 +66,9 @@ public class MainApp implements NavListener {
         cardsPanel.add(new MangaGridPanel(this, "TRUYỆN HOT NHẤT", true, false, null), "HOT");
 
         // 3. History
-        cardsPanel.add(new MangaGridPanel(this, "LỊCH SỬ ĐỌC TRUYỆN", true, false, null), "Lịch sử");
+        MangaGridPanel historyGrid = new MangaGridPanel(this, "LỊCH SỬ ĐỌC TRUYỆN", true, false, null);
+        historyGrid.setName("Lịch sử");
+        cardsPanel.add(historyGrid, "Lịch sử");
 
         // 4. Follow
         MangaGridPanel followGrid = new MangaGridPanel(this, "TRUYỆN ĐANG THEO DÕI", false, false, "Bạn chưa theo dõi truyện nào cả");
@@ -81,7 +88,7 @@ public class MainApp implements NavListener {
         cardsPanel.add(new components.ForgotPasswordPanel(this), "Quên mật khẩu");
 
         // RIGHT: Top Ranking SideBar
-        rightPanel = new TopRankingPanel();
+        rightPanel = new TopRankingPanel(new ArrayList<>(masterMangaList), this);
 
         // ADD to Main Content Panel
         GridBagConstraints gbc = new GridBagConstraints();
@@ -171,6 +178,8 @@ public class MainApp implements NavListener {
         if (found) {
             if (page.equals("Theo dõi")) {
                 refreshFollowPage();
+            } else if (page.equals("Lịch sử")) {
+                refreshHistoryPage();
             }
             cardLayout.show(cardsPanel, page);
         } else {
@@ -232,6 +241,17 @@ public class MainApp implements NavListener {
         return followedMangas.stream().anyMatch(m -> m.getId().equals(mangaId));
     }
 
+    private void addToHistory(models.Manga manga) {
+        // Nếu đã có trong lịch sử thì xóa cái cũ đi để đưa lên đầu
+        historyMangas.removeIf(m -> m.getId().equals(manga.getId()));
+        historyMangas.add(0, manga); // Luôn thêm vào vị trí đầu tiên
+        
+        // Giới hạn lịch sử khoảng 20 bộ cho nhẹ máy
+        if (historyMangas.size() > 20) {
+            historyMangas.remove(historyMangas.size() - 1);
+        }
+    }
+
     private void refreshFollowPage() {
         // Xóa trang cũ và tạo mới với dữ liệu mới nhất
         for (Component comp : cardsPanel.getComponents()) {
@@ -253,8 +273,51 @@ public class MainApp implements NavListener {
         cardsPanel.repaint();
     }
 
+    private void refreshHistoryPage() {
+        // Xóa trang cũ và tạo mới với dữ liệu lịch sử mới nhất
+        for (Component comp : cardsPanel.getComponents()) {
+            if ("Lịch sử".equals(comp.getName())) {
+                cardsPanel.remove(comp);
+                break;
+            }
+        }
+        
+        MangaGridPanel historyGrid;
+        if (historyMangas.isEmpty()) {
+            historyGrid = new MangaGridPanel(this, "LỊCH SỬ ĐỌC TRUYỆN", true, false, "Bạn chưa xem bộ truyện nào!");
+        } else {
+            historyGrid = new MangaGridPanel(this, "LỊCH SỬ ĐỌC TRUYỆN", true, false, null, historyMangas);
+        }
+        historyGrid.setName("Lịch sử");
+        cardsPanel.add(historyGrid, "Lịch sử");
+        cardsPanel.revalidate();
+        cardsPanel.repaint();
+    }
+
+    private List<models.Manga> generateMasterList() {
+        List<models.Manga> list = new ArrayList<>();
+        String[] titles = {
+            "Võ Luyện Đỉnh Phong", "Bách Luyện Thành Thần", "Dị Tộc Trùng Sinh", "Nguyên Tôn",
+            "Đại Quản Gia Là Ma Hoàng", "Phàm Nhân Tu Tiên", "Ta Là Tà Đế", "Toàn Chức Pháp Sư",
+            "Đấu Phá Thương Khung", "Đấu La Đại Lục", "Yêu Thần Ký", "Tuyệt Thế Đường Môn",
+            "Thần Đạo Đan Tôn", "Vạn Cổ Thần Đế", "Kiếm Đạo Độc Tôn", "Tinh Thần Biến",
+            "Thôn Phệ Tinh Không", "Vũ Động Càn Khôn", "Thế Giới Hoàn Mỹ", "Tuyết Ưng Lĩnh Chủ"
+        };
+        
+        for (int i = 0; i < titles.length; i++) {
+            models.Manga m = new models.Manga(String.valueOf(i), titles[i], "cover_" + ((i % 16) + 1) + ".png");
+            // Random views to make ranking interesting
+            m.setViews(100000 + (new java.util.Random().nextInt(900000)));
+            list.add(m);
+        }
+        return list;
+    }
+
     @Override
     public void onMangaClick(models.Manga manga) {
+        // Ghi vào lịch sử trước khi mở trang chi tiết
+        addToHistory(manga);
+
         String cardId = "Detail_" + manga.getId();
         // Remove existing detail panel if any
         for (Component comp : cardsPanel.getComponents()) {
