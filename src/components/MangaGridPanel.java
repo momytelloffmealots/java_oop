@@ -141,8 +141,22 @@ public class MangaGridPanel extends JPanel {
         container.setAlignmentX(Component.LEFT_ALIGNMENT);
         container.add(gridPanel, BorderLayout.NORTH);
         
-        // Prevent stretching horizontally beyond 4-column ideal width
-        container.setMaximumSize(new Dimension(850, Integer.MAX_VALUE));
+        // AUTO-FITTER: dynamically adjust columns on resize
+        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                int width = getWidth();
+                if (width > 0) {
+                    // Optimized calculation: 185px card + 15px gap = ~200px
+                    // But we use 190px to be more aggressive in filling
+                    int cols = Math.max(2, Math.min(10, width / 190)); 
+                    ((GridLayout) gridPanel.getLayout()).setColumns(cols);
+                    gridPanel.revalidate();
+                    gridPanel.repaint();
+                }
+            }
+        });
+        
         container.setAlignmentX(Component.LEFT_ALIGNMENT); // Ghim lề trái
         
         add(container);

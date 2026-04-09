@@ -54,6 +54,7 @@ public class MangaReaderPanel extends JPanel {
         // Centering Panel for images
         JPanel imagesCentering = new JPanel(new GridBagLayout());
         imagesCentering.setBackground(new Color(25, 25, 25));
+        imagesCentering.setAlignmentX(Component.CENTER_ALIGNMENT); // Chốt hạ căn giữa
         
         JPanel imagesPanel = new JPanel();
         imagesPanel.setLayout(new BoxLayout(imagesPanel, BoxLayout.Y_AXIS));
@@ -81,6 +82,35 @@ public class MangaReaderPanel extends JPanel {
         
         styleNavBtn(btnPrev);
         styleNavBtn(btnNext);
+
+        // -- LOGIC TIẾN/LÙI CHƯƠNG --
+        java.util.List<Chapter> chapters = manga.getChapters();
+        int currentIndex = -1;
+        if (chapters != null) {
+            for (int i = 0; i < chapters.size(); i++) {
+                if (chapters.get(i).getName().equals(chapter.getName())) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+        }
+
+        final int finalIndex = currentIndex;
+        btnPrev.addActionListener(e -> {
+            if (chapters != null && finalIndex < chapters.size() - 1) {
+                listener.onReadManga(manga, chapters.get(finalIndex + 1));
+            } else {
+                JOptionPane.showMessageDialog(this, "Đây là chương đầu tiên rồi!");
+            }
+        });
+
+        btnNext.addActionListener(e -> {
+            if (chapters != null && finalIndex > 0) {
+                listener.onReadManga(manga, chapters.get(finalIndex - 1));
+            } else {
+                JOptionPane.showMessageDialog(this, "Bạn đã đọc đến chương mới nhất!");
+            }
+        });
         
         bottomBar.add(btnPrev);
         bottomBar.add(btnNext);

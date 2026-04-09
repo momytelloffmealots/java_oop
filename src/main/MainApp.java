@@ -104,10 +104,8 @@ public class MainApp implements NavListener {
         rightWrapper.add(rightPanel, BorderLayout.NORTH);
         mainContentPanel.add(rightWrapper, gbc);
 
-        // 3. Glue to push everything left
-        gbc.gridx = 2;
-        gbc.weightx = 1.0;
-        mainContentPanel.add(Box.createGlue(), gbc);
+        // 3. Glue removed to allow expansion
+        // mainContentPanel.add(Box.createGlue(), gbc);
 
         // Scroll Pane
         JScrollPane scrollPane = new JScrollPane(mainContentPanel);
@@ -187,15 +185,29 @@ public class MainApp implements NavListener {
         if (cardId == null)
             return;
 
+        GridBagLayout layout = (GridBagLayout) mainContentPanel.getLayout();
+        GridBagConstraints gbcCards = layout.getConstraints(cardsPanel.getParent()); // cardsWrapper
+
         // Hide sidebar for login/register/forgot/reader pages
         if (cardId.equals("Đăng nhập") || cardId.equals("Đăng ký") || cardId.equals("Quên mật khẩu")
                 || cardId.startsWith("Reader_")) {
             rightPanel.setVisible(false);
-            // Hide parent wrapper of rightPanel too if needed, but setVisible(false) on
-            // component is usually enough
+            
+            // Allow the main content to fill and center
+            gbcCards.weightx = 1.0;
+            gbcCards.anchor = GridBagConstraints.CENTER;
+            gbcCards.insets = new Insets(0, 0, 0, 0);
         } else {
             rightPanel.setVisible(true);
+            
+            // Allow main content to fill space even with sidebar
+            gbcCards.weightx = 1.0;
+            gbcCards.fill = GridBagConstraints.BOTH; // Quan trọng: Chiếm hết chỗ
+            gbcCards.anchor = GridBagConstraints.NORTH;
+            gbcCards.insets = new Insets(0, 0, 0, 30);
         }
+        
+        layout.setConstraints(cardsPanel.getParent(), gbcCards);
         mainContentPanel.revalidate();
         mainContentPanel.repaint();
     }
