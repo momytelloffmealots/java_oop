@@ -104,17 +104,33 @@ public class MangaDetailPanel extends JPanel {
         followSection.setBackground(Theme.CONTENT_BG);
         followSection.setAlignmentX(Component.LEFT_ALIGNMENT);
         
-        JButton btnFollow = createButton("Theo dõi", Theme.ACCENT_RED);
+        // CHECK INITIAL STATE
+        if (listener != null) {
+            this.isFollowed = listener.isMangaFollowed(manga.getId());
+        }
+
+        JButton btnFollow = createButton(isFollowed ? "Đã theo dõi" : "Theo dõi", Theme.ACCENT_RED);
+        if (isFollowed) {
+            btnFollow.setBackground(Color.YELLOW);
+            btnFollow.setForeground(Color.BLACK);
+        } else {
+            btnFollow.setBackground(new Color(0, 123, 255)); 
+            btnFollow.setForeground(Color.WHITE);
+        }
+
         btnFollow.addActionListener(e -> {
-            isFollowed = !isFollowed;
-            if (isFollowed) {
-                btnFollow.setText("Đã theo dõi");
-                btnFollow.setBackground(Color.YELLOW);
-                btnFollow.setForeground(Color.BLACK);
-            } else {
-                btnFollow.setText("Theo dõi");
-                btnFollow.setBackground(new Color(0, 123, 255)); 
-                btnFollow.setForeground(Color.WHITE);
+            if (listener != null) {
+                listener.onToggleFollow(manga);
+                isFollowed = !isFollowed;
+                if (isFollowed) {
+                    btnFollow.setText("Đã theo dõi");
+                    btnFollow.setBackground(Color.YELLOW);
+                    btnFollow.setForeground(Color.BLACK);
+                } else {
+                    btnFollow.setText("Theo dõi");
+                    btnFollow.setBackground(new Color(0, 123, 255)); 
+                    btnFollow.setForeground(Color.WHITE);
+                }
             }
         });
 

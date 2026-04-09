@@ -5,4 +5,6 @@ public interface NavListener {
     void onMangaClick(models.Manga manga);
     void onSearch(String query);
     void onReadManga(models.Manga manga, models.Chapter chapter);
+    void onToggleFollow(models.Manga manga);
+    boolean isMangaFollowed(String mangaId);
 }

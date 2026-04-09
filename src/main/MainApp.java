@@ -10,6 +10,8 @@ import utils.Theme;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainApp implements NavListener {
 
@@ -17,6 +19,7 @@ public class MainApp implements NavListener {
     private JPanel cardsPanel;
     private CardLayout cardLayout;
     private TopRankingPanel rightPanel;
+    private List<models.Manga> followedMangas = new ArrayList<>(); // Kho lưu trữ truyện theo dõi
     private JPanel mainContentPanel;
 
     public MainApp() {
@@ -61,9 +64,9 @@ public class MainApp implements NavListener {
         cardsPanel.add(new MangaGridPanel(this, "LỊCH SỬ ĐỌC TRUYỆN", true, false, null), "Lịch sử");
 
         // 4. Follow
-        cardsPanel.add(
-                new MangaGridPanel(this, "TRUYỆN ĐANG THEO DÕI", false, false, "bạn đang không theo dõi truyện nào cả"),
-                "Theo dõi");
+        MangaGridPanel followGrid = new MangaGridPanel(this, "TRUYỆN ĐANG THEO DÕI", false, false, "Bạn chưa theo dõi truyện nào cả");
+        followGrid.setName("Theo dõi");
+        cardsPanel.add(followGrid, "Theo dõi");
 
         // 5. Gender filters
         cardsPanel.add(new MangaGridPanel(this, "TRUYỆN CHO CON GÁI", true, false, null), "Con gái");
@@ -166,6 +169,9 @@ public class MainApp implements NavListener {
         updateSidebarVisibility(page);
 
         if (found) {
+            if (page.equals("Theo dõi")) {
+                refreshFollowPage();
+            }
             cardLayout.show(cardsPanel, page);
         } else {
             cardLayout.show(cardsPanel, "Default");
@@ -210,6 +216,41 @@ public class MainApp implements NavListener {
         layout.setConstraints(cardsPanel.getParent(), gbcCards);
         mainContentPanel.revalidate();
         mainContentPanel.repaint();
+    }
+
+    // -- LOGIC THEO DÕI --
+    @Override
+    public void onToggleFollow(models.Manga manga) {
+        boolean removed = followedMangas.removeIf(m -> m.getId().equals(manga.getId()));
+        if (!removed) {
+            followedMangas.add(manga);
+        }
+    }
+
+    @Override
+    public boolean isMangaFollowed(String mangaId) {
+        return followedMangas.stream().anyMatch(m -> m.getId().equals(mangaId));
+    }
+
+    private void refreshFollowPage() {
+        // Xóa trang cũ và tạo mới với dữ liệu mới nhất
+        for (Component comp : cardsPanel.getComponents()) {
+            if ("Theo dõi".equals(comp.getName())) {
+                cardsPanel.remove(comp);
+                break;
+            }
+        }
+        
+        MangaGridPanel followGrid;
+        if (followedMangas.isEmpty()) {
+            followGrid = new MangaGridPanel(this, "TRUYỆN ĐANG THEO DÕI", false, false, "Bạn chưa theo dõi bộ truyện nào!");
+        } else {
+            followGrid = new MangaGridPanel(this, "TRUYỆN ĐANG THEO DÕI", false, false, null, followedMangas);
+        }
+        followGrid.setName("Theo dõi");
+        cardsPanel.add(followGrid, "Theo dõi");
+        cardsPanel.revalidate();
+        cardsPanel.repaint();
     }
 
     @Override
