@@ -50,7 +50,7 @@ public class MainApp implements NavListener {
 
         // MAIN CONTENT SCROLL AREA
         mainContentPanel = new JPanel();
-        mainContentPanel.setLayout(new BorderLayout(30, 0)); // 30px gap giữa các thành phần
+        mainContentPanel.setLayout(new GridBagLayout());
         mainContentPanel.setBackground(Theme.APP_BG);
         mainContentPanel.setBorder(new EmptyBorder(10, 20, 20, 20));
 
@@ -91,17 +91,32 @@ public class MainApp implements NavListener {
         // RIGHT: Top Ranking SideBar
         rightPanel = new TopRankingPanel(new ArrayList<>(masterMangaList), this);
 
-        // 1. Cards Container (Left/Center - sẽ chiếm toàn bộ khi không có Sidebar)
+        // ADD to Main Content Panel
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.weighty = 1.0;
+
+        // 1. Cards Container (Left)
+        gbc.gridx = 0;
+        gbc.weightx = 0.0;
+        gbc.insets = new Insets(0, 0, 0, 30); // 30px gap
         JPanel cardsWrapper = new JPanel(new BorderLayout());
         cardsWrapper.setOpaque(false);
         cardsWrapper.add(cardsPanel, BorderLayout.NORTH);
-        mainContentPanel.add(cardsWrapper, BorderLayout.CENTER);
+        mainContentPanel.add(cardsWrapper, gbc);
 
         // 2. Ranking Container (Right)
+        gbc.gridx = 1;
+        gbc.weightx = 0.0;
+        gbc.insets = new Insets(0, 0, 0, 0);
         rightWrapper = new JPanel(new BorderLayout());
         rightWrapper.setOpaque(false);
         rightWrapper.add(rightPanel, BorderLayout.NORTH);
-        mainContentPanel.add(rightWrapper, BorderLayout.EAST);
+        mainContentPanel.add(rightWrapper, gbc);
+
+        // 3. Glue removed to allow expansion
+        // mainContentPanel.add(Box.createGlue(), gbc);
 
         // Scroll Pane
         JScrollPane scrollPane = new JScrollPane(mainContentPanel);
@@ -186,16 +201,31 @@ public class MainApp implements NavListener {
         if (cardId == null)
             return;
 
+        GridBagLayout layout = (GridBagLayout) mainContentPanel.getLayout();
+        GridBagConstraints gbcCards = layout.getConstraints(cardsPanel.getParent()); // cardsWrapper
+
         // Hide sidebar for login/register/forgot/reader pages
         if (cardId.equals("Đăng nhập") || cardId.equals("Đăng ký") || cardId.equals("Quên mật khẩu")
                 || cardId.startsWith("Reader_")) {
             rightPanel.setVisible(false);
             if(rightWrapper != null) rightWrapper.setVisible(false);
+            
+            // Allow the main content to fill and center
+            gbcCards.weightx = 1.0;
+            gbcCards.anchor = GridBagConstraints.CENTER;
+            gbcCards.insets = new Insets(0, 0, 0, 0);
         } else {
             rightPanel.setVisible(true);
             if(rightWrapper != null) rightWrapper.setVisible(true);
+            
+            // Allow main content to fill space even with sidebar
+            gbcCards.weightx = 1.0;
+            gbcCards.fill = GridBagConstraints.BOTH; // Quan trọng: Chiếm hết chỗ
+            gbcCards.anchor = GridBagConstraints.NORTH;
+            gbcCards.insets = new Insets(0, 0, 0, 30);
         }
         
+        layout.setConstraints(cardsPanel.getParent(), gbcCards);
         mainContentPanel.revalidate();
         mainContentPanel.repaint();
     }

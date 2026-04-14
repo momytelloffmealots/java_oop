@@ -46,16 +46,19 @@ public class MangaReaderPanel extends JPanel {
 
         add(topBar, BorderLayout.NORTH);
 
-        // MAIN CONTENT
-        JPanel contentContainer = new JPanel(new BorderLayout());
+        // MAIN CONTENT (Vertical Flow for everything)
+        JPanel contentContainer = new JPanel();
+        contentContainer.setLayout(new BoxLayout(contentContainer, BoxLayout.Y_AXIS));
         contentContainer.setBackground(new Color(25, 25, 25));
+
+        // Centering Panel for images
+        JPanel imagesCentering = new JPanel(new GridBagLayout());
+        imagesCentering.setBackground(new Color(25, 25, 25));
+        imagesCentering.setAlignmentX(Component.CENTER_ALIGNMENT); // Chốt hạ căn giữa
         
         JPanel imagesPanel = new JPanel();
         imagesPanel.setLayout(new BoxLayout(imagesPanel, BoxLayout.Y_AXIS));
         imagesPanel.setBackground(new Color(25, 25, 25));
-        // Ép cứng giới hạn tối đa chiều ngang để GridBag hoặc BoxLayout có thể đẩy nó ra giữa chứ không để nó tự kéo dãn
-        imagesPanel.setMaximumSize(new Dimension(850, 9999999));
-        imagesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         String folderName = manga.getId() + "_" + chapter.getName().replace(" ", "");
         for (int i = 1; i <= 10; i++) {
@@ -63,16 +66,12 @@ public class MangaReaderPanel extends JPanel {
             imagesPanel.add(Box.createVerticalStrut(10));
         }
 
-        // Dùng BoxLayout X_AXIS với Box.createHorizontalGlue() cực kỳ mạnh để ép dính ra giữa tuyệt đối
-        JPanel centerWrapper = new JPanel();
-        centerWrapper.setLayout(new BoxLayout(centerWrapper, BoxLayout.X_AXIS));
-        centerWrapper.setBackground(new Color(25, 25, 25));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        imagesCentering.add(imagesPanel, gbc);
         
-        centerWrapper.add(Box.createHorizontalGlue()); // Đẩy từ bên trái
-        centerWrapper.add(imagesPanel);
-        centerWrapper.add(Box.createHorizontalGlue()); // Đẩy từ bên phải
-        
-        contentContainer.add(centerWrapper, BorderLayout.CENTER);
+        contentContainer.add(imagesCentering);
 
         // BOTTOM BAR (Added directly to contentContainer)
         JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 25));
@@ -116,7 +115,7 @@ public class MangaReaderPanel extends JPanel {
         bottomBar.add(btnPrev);
         bottomBar.add(btnNext);
         
-        contentContainer.add(bottomBar, BorderLayout.SOUTH);
+        contentContainer.add(bottomBar);
 
         add(contentContainer, BorderLayout.CENTER);
     }
