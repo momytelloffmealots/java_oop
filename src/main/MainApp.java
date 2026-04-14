@@ -210,6 +210,7 @@ public class MainApp implements NavListener {
             
             // Allow the main content to fill and center
             gbcCards.weightx = 1.0;
+            gbcCards.fill = GridBagConstraints.BOTH; // Quan trọng: Chiếm hết chỗ theo chiều ngang
             gbcCards.anchor = GridBagConstraints.CENTER;
             gbcCards.insets = new Insets(0, 0, 0, 0);
         } else {

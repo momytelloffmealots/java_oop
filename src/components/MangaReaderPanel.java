@@ -46,15 +46,9 @@ public class MangaReaderPanel extends JPanel {
 
         add(topBar, BorderLayout.NORTH);
 
-        // MAIN CONTENT (Vertical Flow for everything)
-        JPanel contentContainer = new JPanel();
-        contentContainer.setLayout(new BoxLayout(contentContainer, BoxLayout.Y_AXIS));
+        // MAIN CONTENT
+        JPanel contentContainer = new JPanel(new BorderLayout());
         contentContainer.setBackground(new Color(25, 25, 25));
-
-        // Centering Panel for images
-        JPanel imagesCentering = new JPanel(new GridBagLayout());
-        imagesCentering.setBackground(new Color(25, 25, 25));
-        imagesCentering.setAlignmentX(Component.CENTER_ALIGNMENT); // Chốt hạ căn giữa
         
         JPanel imagesPanel = new JPanel();
         imagesPanel.setLayout(new BoxLayout(imagesPanel, BoxLayout.Y_AXIS));
@@ -66,12 +60,17 @@ public class MangaReaderPanel extends JPanel {
             imagesPanel.add(Box.createVerticalStrut(10));
         }
 
+        // Dùng GridBagLayout phụ trợ để lúc nào ảnh cũng dính chặt ra giữa
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        centerWrapper.setBackground(new Color(25, 25, 25));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        imagesCentering.add(imagesPanel, gbc);
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        centerWrapper.add(imagesPanel, gbc);
         
-        contentContainer.add(imagesCentering);
+        contentContainer.add(centerWrapper, BorderLayout.CENTER);
 
         // BOTTOM BAR (Added directly to contentContainer)
         JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 25));
@@ -115,7 +114,7 @@ public class MangaReaderPanel extends JPanel {
         bottomBar.add(btnPrev);
         bottomBar.add(btnNext);
         
-        contentContainer.add(bottomBar);
+        contentContainer.add(bottomBar, BorderLayout.SOUTH);
 
         add(contentContainer, BorderLayout.CENTER);
     }
