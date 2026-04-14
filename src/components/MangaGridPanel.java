@@ -147,9 +147,10 @@ public class MangaGridPanel extends JPanel {
             public void componentResized(java.awt.event.ComponentEvent e) {
                 int width = getWidth();
                 if (width > 0) {
-                    // Optimized calculation: 185px card + 15px gap = ~200px
-                    // But we use 190px to be more aggressive in filling
-                    int cols = Math.max(2, Math.min(10, width / 190)); 
+                    // Khôi phục cách tính cũ: Lấy toàn bộ chiều rộng thực tế mà Layout cấp cho trang 
+                    // chia cho kích thước cơ bản của 1 thẻ (~195px).
+                    // Vì Layout đã tự động chừa chỗ cho Sidebar rồi nên ta không cần trừ thủ công nữa.
+                    int cols = Math.max(2, Math.min(10, width / 200)); 
                     ((GridLayout) gridPanel.getLayout()).setColumns(cols);
                     gridPanel.revalidate();
                     gridPanel.repaint();

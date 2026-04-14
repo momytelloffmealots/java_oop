@@ -198,35 +198,41 @@ public class MainApp implements NavListener {
     }
 
     private void updateSidebarVisibility(String cardId) {
-        if (cardId == null)
+        if (cardId == null || mainContentPanel == null)
             return;
 
         GridBagLayout layout = (GridBagLayout) mainContentPanel.getLayout();
-        GridBagConstraints gbcCards = layout.getConstraints(cardsPanel.getParent()); // cardsWrapper
+        JPanel cardsWrapper = (JPanel) cardsPanel.getParent();
+        
+        GridBagConstraints gbcCards = layout.getConstraints(cardsWrapper);
+        GridBagConstraints gbcRight = layout.getConstraints(rightWrapper);
 
-        // Hide sidebar for login/register/forgot/reader pages
         if (cardId.equals("Đăng nhập") || cardId.equals("Đăng ký") || cardId.equals("Quên mật khẩu")
                 || cardId.startsWith("Reader_") || cardId.startsWith("Detail_")) {
-            if (rightWrapper != null) rightWrapper.setVisible(false);
             
-            // Allow the main content to fill and center
+            if (rightWrapper != null) rightWrapper.setVisible(false);
+            gbcCards.gridwidth = 2; 
             gbcCards.weightx = 1.0;
-            gbcCards.gridwidth = 2; // Chiếm hết không gian
-            gbcCards.fill = GridBagConstraints.BOTH;
-            gbcCards.anchor = GridBagConstraints.CENTER;
             gbcCards.insets = new Insets(0, 0, 0, 0);
         } else {
             if (rightWrapper != null) rightWrapper.setVisible(true);
             
-            // Restore normal 2-column layout
-            gbcCards.weightx = 1.0;
-            gbcCards.gridwidth = 1; // Chỉ chiếm 1 cột
-            gbcCards.fill = GridBagConstraints.BOTH;
-            gbcCards.anchor = GridBagConstraints.NORTH;
+            // Ép trang chính chỉ được lấy 1 cột, nhường cột kia
+            gbcCards.gridx = 0;
+            gbcCards.gridwidth = 1; 
+            gbcCards.weightx = 1.0; // Vẫn cho co dãn nhưng trong giới hạn 1 cột
             gbcCards.insets = new Insets(0, 0, 0, 30);
+            
+            // Khẳng định lại vị trí Bảng xếp hạng ở cột 1
+            gbcRight.gridx = 1;
+            gbcRight.gridwidth = 1;
+            gbcRight.weightx = 0.0;
+            gbcRight.fill = GridBagConstraints.VERTICAL;
         }
         
-        layout.setConstraints(cardsPanel.getParent(), gbcCards);
+        layout.setConstraints(cardsWrapper, gbcCards);
+        layout.setConstraints(rightWrapper, gbcRight);
+        
         mainContentPanel.revalidate();
         mainContentPanel.repaint();
     }
