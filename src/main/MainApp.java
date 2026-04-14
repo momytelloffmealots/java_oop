@@ -16,6 +16,7 @@ import java.util.List;
 public class MainApp implements NavListener {
 
     private JFrame frame;
+    private JPanel cardsPanel;
     private CardLayout cardLayout;
     private TopRankingPanel rightPanel;
     private JPanel rightWrapper;
