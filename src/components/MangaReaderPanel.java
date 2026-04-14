@@ -60,15 +60,14 @@ public class MangaReaderPanel extends JPanel {
             imagesPanel.add(Box.createVerticalStrut(10));
         }
 
-        // Dùng GridBagLayout phụ trợ để lúc nào ảnh cũng dính chặt ra giữa
-        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        // Dùng BoxLayout X_AXIS với Box.createHorizontalGlue() cực kỳ mạnh để ép dính ra giữa tuyệt đối
+        JPanel centerWrapper = new JPanel();
+        centerWrapper.setLayout(new BoxLayout(centerWrapper, BoxLayout.X_AXIS));
         centerWrapper.setBackground(new Color(25, 25, 25));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.anchor = GridBagConstraints.NORTH;
-        centerWrapper.add(imagesPanel, gbc);
+        
+        centerWrapper.add(Box.createHorizontalGlue()); // Đẩy từ bên trái
+        centerWrapper.add(imagesPanel);
+        centerWrapper.add(Box.createHorizontalGlue()); // Đẩy từ bên phải
         
         contentContainer.add(centerWrapper, BorderLayout.CENTER);
 
