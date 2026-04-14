@@ -19,7 +19,6 @@ public class MainApp implements NavListener {
     private JPanel cardsPanel;
     private CardLayout cardLayout;
     private TopRankingPanel rightPanel;
-    private JPanel rightWrapper;
     private List<models.Manga> followedMangas = new ArrayList<>(); // Kho lưu trữ truyện theo dõi
     private List<models.Manga> historyMangas = new ArrayList<>(); // Kho lưu trữ lịch sử
     private List<models.Manga> masterMangaList; // Danh sách tổng hợp để xếp hạng
@@ -110,7 +109,7 @@ public class MainApp implements NavListener {
         gbc.gridx = 1;
         gbc.weightx = 0.0;
         gbc.insets = new Insets(0, 0, 0, 0);
-        rightWrapper = new JPanel(new BorderLayout());
+        JPanel rightWrapper = new JPanel(new BorderLayout());
         rightWrapper.setOpaque(false);
         rightWrapper.add(rightPanel, BorderLayout.NORTH);
         mainContentPanel.add(rightWrapper, gbc);
@@ -208,7 +207,6 @@ public class MainApp implements NavListener {
         if (cardId.equals("Đăng nhập") || cardId.equals("Đăng ký") || cardId.equals("Quên mật khẩu")
                 || cardId.startsWith("Reader_")) {
             rightPanel.setVisible(false);
-            if(rightWrapper != null) rightWrapper.setVisible(false);
             
             // Allow the main content to fill and center
             gbcCards.weightx = 1.0;
@@ -216,7 +214,6 @@ public class MainApp implements NavListener {
             gbcCards.insets = new Insets(0, 0, 0, 0);
         } else {
             rightPanel.setVisible(true);
-            if(rightWrapper != null) rightWrapper.setVisible(true);
             
             // Allow main content to fill space even with sidebar
             gbcCards.weightx = 1.0;
