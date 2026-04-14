@@ -16,9 +16,9 @@ import java.util.List;
 public class MainApp implements NavListener {
 
     private JFrame frame;
-    private JPanel cardsPanel;
     private CardLayout cardLayout;
     private TopRankingPanel rightPanel;
+    private JPanel rightWrapper;
     private List<models.Manga> followedMangas = new ArrayList<>(); // Kho lưu trữ truyện theo dõi
     private List<models.Manga> historyMangas = new ArrayList<>(); // Kho lưu trữ lịch sử
     private List<models.Manga> masterMangaList; // Danh sách tổng hợp để xếp hạng
@@ -109,7 +109,7 @@ public class MainApp implements NavListener {
         gbc.gridx = 1;
         gbc.weightx = 0.0;
         gbc.insets = new Insets(0, 0, 0, 0);
-        JPanel rightWrapper = new JPanel(new BorderLayout());
+        rightWrapper = new JPanel(new BorderLayout());
         rightWrapper.setOpaque(false);
         rightWrapper.add(rightPanel, BorderLayout.NORTH);
         mainContentPanel.add(rightWrapper, gbc);
@@ -205,19 +205,22 @@ public class MainApp implements NavListener {
 
         // Hide sidebar for login/register/forgot/reader pages
         if (cardId.equals("Đăng nhập") || cardId.equals("Đăng ký") || cardId.equals("Quên mật khẩu")
-                || cardId.startsWith("Reader_")) {
-            rightPanel.setVisible(false);
+                || cardId.startsWith("Reader_") || cardId.startsWith("Detail_")) {
+            if (rightWrapper != null) rightWrapper.setVisible(false);
             
             // Allow the main content to fill and center
             gbcCards.weightx = 1.0;
+            gbcCards.gridwidth = 2; // Chiếm hết không gian
+            gbcCards.fill = GridBagConstraints.BOTH;
             gbcCards.anchor = GridBagConstraints.CENTER;
             gbcCards.insets = new Insets(0, 0, 0, 0);
         } else {
-            rightPanel.setVisible(true);
+            if (rightWrapper != null) rightWrapper.setVisible(true);
             
-            // Allow main content to fill space even with sidebar
+            // Restore normal 2-column layout
             gbcCards.weightx = 1.0;
-            gbcCards.fill = GridBagConstraints.BOTH; // Quan trọng: Chiếm hết chỗ
+            gbcCards.gridwidth = 1; // Chỉ chiếm 1 cột
+            gbcCards.fill = GridBagConstraints.BOTH;
             gbcCards.anchor = GridBagConstraints.NORTH;
             gbcCards.insets = new Insets(0, 0, 0, 30);
         }

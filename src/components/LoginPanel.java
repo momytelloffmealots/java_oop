@@ -94,10 +94,10 @@ public class LoginPanel extends JPanel {
             String pass = new String(txtPass.getPassword());
             
             if (user.equals("admin") && pass.equals("123")) {
-                JOptionPane.showMessageDialog(this, "Đăng nhập thành công! Chào mừng admin.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Đăng nhập thành công! Chào mừng admin.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 if (this.listener != null) this.listener.onNavigate("Trang chủ", null);
             } else {
-                JOptionPane.showMessageDialog(this, "Tài khoản hoặc mật khẩu không đúng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Tài khoản hoặc mật khẩu không đúng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 txtPass.setText("");
             }
         });
