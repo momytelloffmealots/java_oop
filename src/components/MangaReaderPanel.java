@@ -53,6 +53,9 @@ public class MangaReaderPanel extends JPanel {
         JPanel imagesPanel = new JPanel();
         imagesPanel.setLayout(new BoxLayout(imagesPanel, BoxLayout.Y_AXIS));
         imagesPanel.setBackground(new Color(25, 25, 25));
+        // Ép cứng giới hạn tối đa chiều ngang để GridBag hoặc BoxLayout có thể đẩy nó ra giữa chứ không để nó tự kéo dãn
+        imagesPanel.setMaximumSize(new Dimension(850, 9999999));
+        imagesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         String folderName = manga.getId() + "_" + chapter.getName().replace(" ", "");
         for (int i = 1; i <= 10; i++) {

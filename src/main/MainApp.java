@@ -215,6 +215,7 @@ public class MainApp implements NavListener {
             gbcCards.fill = GridBagConstraints.BOTH; // Quan trọng: Chiếm hết chỗ theo chiều ngang
             gbcCards.anchor = GridBagConstraints.CENTER;
             gbcCards.insets = new Insets(0, 0, 0, 0);
+            gbcCards.gridwidth = 2; // Chiếm toàn bộ 2 cột để không bị dồn
         } else {
             rightPanel.setVisible(true);
             if(rightWrapper != null) rightWrapper.setVisible(true);
@@ -224,6 +225,7 @@ public class MainApp implements NavListener {
             gbcCards.fill = GridBagConstraints.BOTH; // Quan trọng: Chiếm hết chỗ
             gbcCards.anchor = GridBagConstraints.NORTH;
             gbcCards.insets = new Insets(0, 0, 0, 30);
+            gbcCards.gridwidth = 1; // Trả về 1 cột
         }
         
         layout.setConstraints(cardsPanel.getParent(), gbcCards);
